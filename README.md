@@ -1,9 +1,10 @@
+-----------------------------------------
+
 # Simple User REST API (No Database)
 
 A minimal REST API built with Express.js to practice CRUD operations without using any database.  
 User data is stored temporarily in-memory.
 
------------------------------------------
 
 ## 🚀 Features
 - GET all users  
