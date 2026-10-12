@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+
+<h1>Dashboard</h1>
+
+<h2>Welcome, <%= user.username %>!</h2>
+<p>Role: <%= role.toUpperCase() %></p>
+
+<% if (role === 'admin') { %>
+    <p>Admin panel goes here. (Add student management, notice posting, etc.)</p>
+<% } else if (role === 'student' && studentData) { %>
+    <h3>Student Profile</h3>
+    <p><strong>Name:</strong> <%= studentData.name %></p>
+    <p><strong>Roll No:</strong> <%= studentData.roll %></p>
+    <p><strong>Class:</strong> <%= studentData.class %></p>
+
+    <h3>Fee Status</h3>
+    <% if (fees.length > 0) { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% fees.forEach(fee => { %>
+                    <tr>
+                        <td>$<%= fee.amount %></td>
+                        <td><%= fee.status %></td>
+                        <td><%= fee.dueDate.toDateString() %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No fee records found.</p>
+    <% } %>
+
+    <h3>Exam Results</h3>
+    <% if (results.length > 0) { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                    <th>Exam Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% results.forEach(result => { %>
+                    <tr>
+                        <td><%= result.subject %></td>
+                        <td><%= result.marks %></td>
+                        <td><%= result.examDate.toDateString() %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } else { %>
+        <p>No result records found.</p>
+    <% } %>
+
+<% } else { %>
+    <p>Your student profile has not been linked yet. Please contact the administrator.</p>
+<% } %>
+
+<%- include('partials/footer') %>

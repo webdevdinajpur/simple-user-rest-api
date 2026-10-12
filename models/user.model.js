@@ -1,14 +1,24 @@
-let allUsers = [
-   {
-    "id": "cmi9pwc7x0001sus664b2bdfw",
-    "name": "Abdur Rahman",
-    "email": "webdevzonebd@gmail.com"
-   },
-   {
-    "id": "cmi9pyrrf00000os6el5n2cqv",
-    "name": "Sirajam Munira",
-    "email": "vangalbora@gmail.com"
-   }
-];
+const mongoose = require('mongoose');
 
-module.exports = allUsers;
+const userSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true
+    },
+    role: {
+        type: String,
+        enum: ['admin', 'student'],
+        default: 'student'
+    },
+    studentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student'
+    }
+});
+
+module.exports = mongoose.model('User', userSchema);

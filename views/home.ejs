@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+
+<h1>Welcome to Our School</h1>
+<p>Providing excellence in education since 1990.</p>
+
+<section>
+    <h2>Latest Notices</h2>
+    <% if (notices && notices.length > 0) { %>
+        <ul>
+            <% notices.forEach(notice => { %>
+                <li>
+                    <strong><%= notice.title %></strong> - <%= notice.date.toDateString() %><br>
+                    <%= notice.content %>
+                </li>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <p>No notices available.</p>
+    <% } %>
+</section>
+
+<section style="margin-top: 30px;">
+    <h2>Quick Links</h2>
+    <ul>
+        <li><a href="/admission">Apply for Admission</a></li>
+        <li><a href="/login">Student/Admin Login</a></li>
+        <li><a href="/notices">View All Notices</a></li>
+    </ul>
+</section>
+
+<%- include('partials/footer') %>
