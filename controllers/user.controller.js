@@ -1,48 +1,61 @@
-const path = require('path');
-const cuid = require('cuid');
-let allUsers = require('../models/user.model.js');
+const User = require('../models/user.model');
+const bcrypt = require('bcryptjs');
 
-const getAllUser = (req, res)=>{
-   res.status(200).json(allUsers);
+const registerUser = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).send('User already exists');
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        const user = new User({
+            username,
+            password: hashedPassword
+        });
+        await user.save();
+        res.redirect('/login');
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
 };
 
-const newUser = (req, res)=>{
-   let name = req.body.name;
-   let email = req.body.email;
-   let newUser = {
-      id: cuid(),
-      name: name,
-      email: email
-   };
-   allUsers.push(newUser);
-   res.status(201).json(allUsers);
+const loginUser = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).send('Invalid Credentials');
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).send('Invalid Credentials');
+        }
+
+        req.session.userId = user._id;
+        req.session.role = user.role;
+        res.redirect('/dashboard');
+    } catch (error) {
+        res.status(500).send('Server Error');
+    }
 };
 
-const updateUser = (req, res) => {
-  const userId = req.params.id;
-  const name = req.body.name;
-  const email = req.body.email;
-  
-  allUsers
-    .filter((user)=>user.id===userId)
-    .map((selecteduser)=>{
-       selecteduser.name = name,
-       selecteduser.email = email;
+const logoutUser = (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.redirect('/dashboard');
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/');
     });
-  res.json(allUsers);
 };
-
-const deleteUser = (req, res)=>{
-   const userId = req.params.id;
-   allUsers = allUsers
-    .filter((user)=>user.id!==userId);
-    res.json(allUsers);
-};
-
 
 module.exports = {
-   getAllUser,
-   newUser,
-   updateUser,
-   deleteUser
+    registerUser,
+    loginUser,
+    logoutUser
 };

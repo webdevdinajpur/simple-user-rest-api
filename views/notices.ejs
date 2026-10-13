@@ -1,0 +1,19 @@
+<%- include('partials/header') %>
+
+<h1>School Notices</h1>
+
+<% if (notices && notices.length > 0) { %>
+    <ul style="list-style-type: none; padding: 0;">
+        <% notices.forEach(notice => { %>
+            <li style="border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; border-radius: 5px;">
+                <h3 style="margin-top: 0;"><%= notice.title %></h3>
+                <small style="color: #666;"><%= notice.date.toDateString() %></small>
+                <p style="margin-bottom: 0;"><%= notice.content %></p>
+            </li>
+        <% }) %>
+    </ul>
+<% } else { %>
+    <p>No notices available.</p>
+<% } %>
+
+<%- include('partials/footer') %>
