@@ -12,13 +12,22 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'student'],
+        enum: ['admin', 'principal', 'accountant', 'teacher', 'student', 'guardian'],
         default: 'student'
     },
-    studentId: {
+    referenceId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Student'
+        refPath: 'referenceModel'
+    },
+    referenceModel: {
+        type: String,
+        enum: ['Student', 'Teacher'], // Expand as needed
+    },
+    status: {
+        type: String,
+        enum: ['active', 'inactive', 'suspended'],
+        default: 'active'
     }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
