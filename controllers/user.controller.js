@@ -1,46 +1,27 @@
-const User = require('../models/user.model');
-const bcrypt = require('bcryptjs');
+const AuthService = require('../services/auth.service');
 
 const registerUser = async (req, res) => {
     try {
         const { username, password } = req.body;
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.status(400).send('User already exists');
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        const user = new User({
-            username,
-            password: hashedPassword
-        });
-        await user.save();
+        // Default role is always student for public registration to prevent mass assignment
+        const role = 'student';
+        await AuthService.registerUser(username, password, role);
         res.redirect('/login');
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(400).send(error.message);
     }
 };
 
 const loginUser = async (req, res) => {
     try {
         const { username, password } = req.body;
-        const user = await User.findOne({ username });
-        if (!user) {
-            return res.status(400).send('Invalid Credentials');
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).send('Invalid Credentials');
-        }
+        const user = await AuthService.authenticateUser(username, password);
 
         req.session.userId = user._id;
         req.session.role = user.role;
         res.redirect('/dashboard');
     } catch (error) {
-        res.status(500).send('Server Error');
+        res.status(400).send(error.message);
     }
 };
 
